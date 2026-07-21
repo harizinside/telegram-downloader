@@ -47,3 +47,23 @@ def error_too_large() -> str:
 
 def error_generic() -> str:
     return "Ada yang salah pas download. Coba lagi sebentar lagi."
+
+
+def tldv_ask_token() -> str:
+    return (
+        "To download from tl;dv, I need your bearer token.\n\n"
+        "How to get it:\n"
+        "1. Open tldv.io and log in.\n"
+        "2. Press F12 → Console tab.\n"
+        "3. Run: JSON.parse(localStorage.getItem(\"_cap_jwt\")).token\n"
+        "4. Copy the output.\n\n"
+        "Send the token here. It will only be used for this one download and discarded afterwards."
+    )
+
+
+def tldv_ask_url() -> str:
+    return "Sekarang kirim URL meeting tl;dv-nya (contoh: https://tldv.io/app/meetings/...)."
+
+
+def tldv_invalid_url() -> str:
+    return "URL-nya kelihatannya bukan meeting tl;dv yang valid. Format: https://tldv.io/app/meetings/<id>"

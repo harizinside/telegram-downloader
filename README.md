@@ -56,6 +56,18 @@ Kalau mau limit 2GB, tambahkan `--profile local-api` di kedua command di atas, d
 
 ffmpeg dan yt-dlp sudah ada di dalam image — VPS tidak perlu install apa-apa selain Docker.
 
+## `/tldv` — Download recording tl;dv
+
+Bot ini punya command khusus `/tldv` buat download recording meeting tl;dv.io. Karena tl;dv gak punya akses publik, command ini bakal minta **bearer token** dari akun tl;dv kamu dulu (sekali pakai, gak disimpan), baru minta URL-nya.
+
+Cara dapetin token (dari browser):
+1. Buka tldv.io dan login.
+2. Tekan F12 → tab Console.
+3. Jalankan: `JSON.parse(localStorage.getItem("_cap_jwt")).token`
+4. Copy hasilnya.
+
+Token hanya dipakai untuk satu kali download dan langsung dihapus setelah selesai. Paste link tl;dv biasa (tanpa `/tldv`) **tidak** akan diproses oleh bot karena butuh token.
+
 ## Environment variables
 
 | Var | Default | Keterangan |

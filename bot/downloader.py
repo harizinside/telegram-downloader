@@ -36,7 +36,7 @@ class GenericDownloadError(DownloadError):
 _UNAVAILABLE_HINTS = ("private", "unavailable", "removed", "not available")
 
 
-def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
+def _download_sync(url: str, out_dir: Path, timeout: float, extractor_args: dict | None = None) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     ydl_opts = {
         "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b",
@@ -47,6 +47,8 @@ def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
         "no_warnings": True,
         "socket_timeout": timeout,
     }
+    if extractor_args:
+        ydl_opts["extractor_args"] = extractor_args
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
@@ -71,10 +73,10 @@ def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
     return path
 
 
-async def download(url: str, out_dir: Path, timeout: float, max_size_mb: int) -> Path:
+async def download(url: str, out_dir: Path, timeout: float, max_size_mb: int, extractor_args: dict | None = None) -> Path:
     try:
         path = await asyncio.wait_for(
-            asyncio.to_thread(_download_sync, url, out_dir, timeout),
+            asyncio.to_thread(_download_sync, url, out_dir, timeout, extractor_args),
             timeout=timeout,
         )
     except asyncio.TimeoutError as exc:

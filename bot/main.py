@@ -10,13 +10,14 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
 from bot.config import Settings
-from bot.handlers import commands, links
+from bot.handlers import commands, links, tldv
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BOT_COMMANDS = [
     BotCommand(command="start", description="Mulai / cara pakai"),
+    BotCommand(command="tldv", description="Download recording tl;dv (butuh bearer token)"),
     BotCommand(command="help", description="Bantuan cara pakai bot"),
 ]
 
@@ -31,6 +32,7 @@ async def main() -> None:
 
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.include_router(commands.router)
+    dispatcher.include_router(tldv.router)
     dispatcher.include_router(links.router)
 
     semaphore = asyncio.Semaphore(settings.max_concurrent_downloads)
