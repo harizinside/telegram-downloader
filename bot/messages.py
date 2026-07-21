@@ -29,6 +29,30 @@ def uploading() -> str:
     return "📤 Upload ke Telegram..."
 
 
+def ask_for_cookies() -> str:
+    return (
+        "🔒 Media ini ditandai sensitive/NSFW — platform-nya butuh akun yang login buat akses.\n\n"
+        "Cara dapetin cookies-nya:\n"
+        "1. Install extension browser \"Get cookies.txt LOCALLY\" (Chrome/Edge) atau "
+        "\"cookies.txt\" (Firefox)\n"
+        "2. Login ke akun kamu di situs itu (misal x.com) lewat browser yang sama\n"
+        "3. Buka halaman video/postingan yang mau didownload, klik icon extension-nya, "
+        "lalu export/download cookies-nya (jadi file .txt)\n"
+        "4. Kirim file .txt itu ke sini\n\n"
+        "⚠️ Cookies itu setara akses sementara ke akun kamu — cuma saya pakai buat download ini "
+        "doang dan langsung dihapus setelahnya. Jangan kirim cookies akun yang gak kamu percaya, "
+        "dan jangan share file cookies ini ke orang lain."
+    )
+
+
+def invalid_cookies() -> str:
+    return "Saya butuh file cookies.txt (atau paste isi cookies-nya sebagai teks). Kirim ulang ya."
+
+
+def error_cookies_failed() -> str:
+    return "Masih gagal walau pakai cookies itu — mungkin cookies-nya sudah expired atau bukan buat akun yang tepat."
+
+
 def error_unsupported() -> str:
     return "Link itu kelihatannya gak didukung buat didownload. Coba link lain."
 

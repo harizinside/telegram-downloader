@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
+from typing import Optional
 
 import yt_dlp
 
@@ -21,6 +22,10 @@ class UnavailableError(DownloadError):
     pass
 
 
+class AuthRequiredError(DownloadError):
+    pass
+
+
 class DownloadTimeoutError(DownloadError):
     pass
 
@@ -33,10 +38,13 @@ class GenericDownloadError(DownloadError):
     pass
 
 
+# e.g. "NSFW tweet requires authentication. Use --cookies, ..." (Twitter/X sensitive
+# media), or similar "login required" messages from other extractors.
+_AUTH_REQUIRED_HINTS = ("requires authentication", "login required", "log in to confirm", "sign in to confirm")
 _UNAVAILABLE_HINTS = ("private", "unavailable", "removed", "not available")
 
 
-def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
+def _download_sync(url: str, out_dir: Path, timeout: float, cookiefile: Optional[Path]) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     ydl_opts = {
         "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b",
@@ -47,14 +55,19 @@ def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
         "no_warnings": True,
         "socket_timeout": timeout,
     }
+    if cookiefile is not None:
+        ydl_opts["cookiefile"] = str(cookiefile)
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
     except yt_dlp.utils.DownloadError as exc:
         message = str(exc)
+        lowered = message.lower()
         if "Unsupported URL" in message:
             raise UnsupportedError(message) from exc
-        if any(hint in message.lower() for hint in _UNAVAILABLE_HINTS):
+        if any(hint in lowered for hint in _AUTH_REQUIRED_HINTS):
+            raise AuthRequiredError(message) from exc
+        if any(hint in lowered for hint in _UNAVAILABLE_HINTS):
             raise UnavailableError(message) from exc
         raise GenericDownloadError(message) from exc
 
@@ -71,10 +84,16 @@ def _download_sync(url: str, out_dir: Path, timeout: float) -> Path:
     return path
 
 
-async def download(url: str, out_dir: Path, timeout: float, max_size_mb: int) -> Path:
+async def download(
+    url: str,
+    out_dir: Path,
+    timeout: float,
+    max_size_mb: int,
+    cookiefile: Optional[Path] = None,
+) -> Path:
     try:
         path = await asyncio.wait_for(
-            asyncio.to_thread(_download_sync, url, out_dir, timeout),
+            asyncio.to_thread(_download_sync, url, out_dir, timeout, cookiefile),
             timeout=timeout,
         )
     except asyncio.TimeoutError as exc:
