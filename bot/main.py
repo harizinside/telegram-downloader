@@ -16,12 +16,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BOT_COMMANDS = [
-    BotCommand(command="start", description="Mulai / lihat menu platform"),
+    BotCommand(command="start", description="Mulai / cara pakai"),
     BotCommand(command="help", description="Bantuan cara pakai bot"),
-    BotCommand(command="fb", description="Download video Facebook"),
-    BotCommand(command="x", description="Download video X/Twitter"),
-    BotCommand(command="ig", description="Download video Instagram"),
-    BotCommand(command="tk", description="Download video TikTok"),
 ]
 
 

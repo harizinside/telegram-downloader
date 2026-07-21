@@ -1,20 +1,16 @@
-from bot.platforms import Platform
-
-
 def welcome() -> str:
-    return "Halo! Pilih platform video yang mau kamu download:"
-
-
-def ask_for_link(platform: Platform) -> str:
-    return f"Kirim link video {platform.name}-nya ya."
+    return (
+        "Halo! Kirim aja link video-nya (TikTok, Instagram, Facebook, X/Twitter, "
+        "YouTube, atau situs lain yang didukung) — saya download-in otomatis."
+    )
 
 
 def busy_downloading() -> str:
     return "⏳ Masih ada proses download yang berjalan, tunggu sampai selesai ya."
 
 
-def invalid_link(platform: Platform) -> str:
-    return f"Itu kelihatannya bukan link {platform.name} yang valid. Coba kirim lagi linknya."
+def not_a_link() -> str:
+    return "Itu kelihatannya bukan link. Kirim link video-nya buat saya download-in."
 
 
 def starting() -> str:
@@ -25,16 +21,16 @@ def queued() -> str:
     return "⏳ Antre giliran download..."
 
 
-def downloading(platform: Platform) -> str:
-    return f"⬇️ Downloading dari {platform.name}..."
+def downloading(label: str) -> str:
+    return f"⬇️ Downloading dari {label}..."
 
 
 def uploading() -> str:
     return "📤 Upload ke Telegram..."
 
 
-def error_unsupported(platform: Platform) -> str:
-    return f"Link itu kelihatannya bukan video {platform.name} yang didukung. Coba cek lagi linknya."
+def error_unsupported() -> str:
+    return "Link itu kelihatannya gak didukung buat didownload. Coba link lain."
 
 
 def error_unavailable() -> str:
@@ -46,7 +42,7 @@ def error_timeout() -> str:
 
 
 def error_too_large() -> str:
-    return "Videonya lebih dari 2GB, kebesaran buat saya kirim. Maaf!"
+    return "Videonya kebesaran buat saya kirim. Maaf!"
 
 
 def error_generic() -> str:

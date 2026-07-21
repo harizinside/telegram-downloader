@@ -1,8 +1,10 @@
 # telegram-downloader
 
-Bot Telegram yang download video dari Facebook, X/Twitter, Instagram, dan TikTok lewat yt-dlp, lalu mengirimkannya balik ke chat.
+Bot Telegram yang download video lewat yt-dlp, lalu mengirimkannya balik ke chat.
 
-Alur: `/start` → klik tombol platform (Twitter/X, Facebook, TikTok, Instagram) → bot minta link → kirim link → bot balas video-nya.
+Alur: kirim link video **apapun, kapan aja** (gak perlu command atau pilih platform dulu) → bot otomatis deteksi platformnya → download → kirim balik videonya. Karena pakai yt-dlp, situs yang didukung gak dibatasi cuma TikTok/Instagram/Facebook/X/YouTube — apapun yang bisa di-extract yt-dlp bakal dicoba. Kalau link-nya gak didukung, bot balas pesan error yang jelas.
+
+> **Catatan YouTube livestream**: video YouTube biasa dan livestream yang **sudah selesai** (VOD) didownload seperti video biasa. Livestream yang **masih berlangsung** akan didownload dari titik itu terus sampai stream selesai atau kena `DOWNLOAD_TIMEOUT_SECONDS` (default 600 detik) — kalau streamnya panjang, downloadnya bisa gagal karena timeout.
 
 ## Setup
 

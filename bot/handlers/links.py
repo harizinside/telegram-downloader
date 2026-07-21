@@ -12,7 +12,7 @@ from aiogram.types import FSInputFile, Message
 
 from bot import downloader, messages
 from bot.config import Settings
-from bot.platforms import PLATFORMS, validate_url
+from bot.platforms import display_label, extract_url
 from bot.states import DownloadFlow
 
 logger = logging.getLogger(__name__)
@@ -20,23 +20,24 @@ logger = logging.getLogger(__name__)
 router = Router(name="links")
 
 
-@router.message(StateFilter(DownloadFlow.awaiting_link))
+@router.message(StateFilter(DownloadFlow.downloading))
+async def handle_busy(message: Message) -> None:
+    await message.answer(messages.busy_downloading())
+
+
+@router.message()
 async def handle_link(
     message: Message,
     state: FSMContext,
     settings: Settings,
     semaphore: asyncio.Semaphore,
 ) -> None:
-    data = await state.get_data()
-    platform = PLATFORMS.get(data.get("platform"))
-    if platform is None:
-        await state.clear()
+    url = extract_url(message.text or "")
+    if url is None:
+        await message.answer(messages.not_a_link())
         return
 
-    url = validate_url(platform, message.text or "")
-    if url is None:
-        await message.answer(messages.invalid_link(platform))
-        return
+    label = display_label(url)
 
     await state.set_state(DownloadFlow.downloading)
     status = await message.answer(messages.starting())
@@ -49,7 +50,7 @@ async def handle_link(
         await semaphore.acquire()
         acquired = True
 
-        await status.edit_text(messages.downloading(platform))
+        await status.edit_text(messages.downloading(label))
         path = await downloader.download(
             url,
             out_dir,
@@ -61,7 +62,7 @@ async def handle_link(
         await message.answer_video(FSInputFile(path), supports_streaming=True)
         await status.delete()
     except downloader.UnsupportedError:
-        await status.edit_text(messages.error_unsupported(platform))
+        await status.edit_text(messages.error_unsupported())
     except downloader.UnavailableError:
         await status.edit_text(messages.error_unavailable())
     except downloader.DownloadTimeoutError:
