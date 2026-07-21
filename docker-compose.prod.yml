@@ -1,0 +1,42 @@
+# VPS deployment: pulls the pre-built image from ghcr.io instead of building
+# locally. Replace OWNER below with the actual GitHub username/org that owns
+# this repo (must match the ghcr.io path pushed by
+# .github/workflows/docker-publish.yml).
+#
+# Local API server (2GB upload limit) is OPTIONAL. It only starts if you set
+# COMPOSE_PROFILES=local-api in your .env alongside TELEGRAM_API_ID/HASH.
+# Leave those blank and the bot auto-falls-back to api.telegram.org (50MB limit).
+#
+# Usage on the VPS:
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+
+services:
+  telegram-bot-api:
+    image: aiogram/telegram-bot-api:latest
+    restart: unless-stopped
+    profiles: ["local-api"]
+    environment:
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+      TELEGRAM_LOCAL: "1"
+    volumes:
+      - bot-api-data:/var/lib/telegram-bot-api
+      - downloads:/data/downloads
+
+  bot:
+    image: ghcr.io/OWNER/telegram-downloader:latest
+    restart: unless-stopped
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-}
+      DOWNLOAD_DIR: /data/downloads
+      MAX_CONCURRENT_DOWNLOADS: "2"
+      DOWNLOAD_TIMEOUT_SECONDS: "600"
+    volumes:
+      - downloads:/data/downloads
+
+volumes:
+  bot-api-data:
+  downloads:
