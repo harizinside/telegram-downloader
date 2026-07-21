@@ -43,7 +43,7 @@ Sama seperti di atas: tanpa `TELEGRAM_API_ID`/`TELEGRAM_API_HASH` di-set, bot fa
 
 ## Deploy ke VPS lewat ghcr.io
 
-Push ke `main` men-trigger `.github/workflows/docker-publish.yml` yang build & push image ke `ghcr.io/<owner>/telegram-downloader:latest`. Di VPS, edit `docker-compose.prod.yml` (ganti `OWNER`), lalu:
+Push ke `main` men-trigger `.github/workflows/docker-publish.yml` yang build & push image ke `ghcr.io/harizinside/telegram-downloader:latest`. Di VPS:
 
 ```
 docker compose -f docker-compose.prod.yml pull

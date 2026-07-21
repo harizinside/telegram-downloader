@@ -1,7 +1,5 @@
 # VPS deployment: pulls the pre-built image from ghcr.io instead of building
-# locally. Replace OWNER below with the actual GitHub username/org that owns
-# this repo (must match the ghcr.io path pushed by
-# .github/workflows/docker-publish.yml).
+# locally.
 #
 # Local API server (2GB upload limit) is OPTIONAL. It only starts if you set
 # COMPOSE_PROFILES=local-api in your .env alongside TELEGRAM_API_ID/HASH.
@@ -25,7 +23,7 @@ services:
       - downloads:/data/downloads
 
   bot:
-    image: ghcr.io/OWNER/telegram-downloader:latest
+    image: ghcr.io/harizinside/telegram-downloader:latest
     restart: unless-stopped
     environment:
       BOT_TOKEN: ${BOT_TOKEN}

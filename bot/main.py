@@ -7,12 +7,22 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.telegram import TelegramAPIServer
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import BotCommand
 
 from bot.config import Settings
 from bot.handlers import commands, links
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+BOT_COMMANDS = [
+    BotCommand(command="start", description="Mulai / lihat menu platform"),
+    BotCommand(command="help", description="Bantuan cara pakai bot"),
+    BotCommand(command="fb", description="Download video Facebook"),
+    BotCommand(command="x", description="Download video X/Twitter"),
+    BotCommand(command="ig", description="Download video Instagram"),
+    BotCommand(command="tk", description="Download video TikTok"),
+]
 
 
 async def main() -> None:
@@ -30,6 +40,7 @@ async def main() -> None:
     semaphore = asyncio.Semaphore(settings.max_concurrent_downloads)
 
     await bot.delete_webhook(drop_pending_updates=True)
+    await bot.set_my_commands(BOT_COMMANDS)
     await dispatcher.start_polling(
         bot,
         settings=settings,
