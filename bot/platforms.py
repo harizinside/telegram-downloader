@@ -52,6 +52,10 @@ def detect_platform(url: str) -> Optional[Platform]:
     return None
 
 
+def is_youtube(url: str) -> bool:
+    return detect_platform(url) is YOUTUBE
+
+
 def display_label(url: str) -> str:
     platform = detect_platform(url)
     if platform:

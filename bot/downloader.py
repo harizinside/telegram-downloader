@@ -36,17 +36,40 @@ class GenericDownloadError(DownloadError):
 _UNAVAILABLE_HINTS = ("private", "unavailable", "removed", "not available")
 
 
-def _download_sync(url: str, out_dir: Path, timeout: float, extractor_args: dict | None = None) -> Path:
+def _download_sync(
+    url: str,
+    out_dir: Path,
+    timeout: float,
+    extractor_args: dict | None = None,
+    audio_only: bool = False,
+) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    ydl_opts = {
-        "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b",
-        "merge_output_format": "mp4",
-        "outtmpl": str(out_dir / "%(id)s.%(ext)s"),
-        "noplaylist": True,
-        "quiet": True,
-        "no_warnings": True,
-        "socket_timeout": timeout,
-    }
+    if audio_only:
+        ydl_opts = {
+            "format": "bestaudio/b",
+            "outtmpl": str(out_dir / "%(id)s.%(ext)s"),
+            "noplaylist": True,
+            "quiet": True,
+            "no_warnings": True,
+            "socket_timeout": timeout,
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ],
+        }
+    else:
+        ydl_opts = {
+            "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b",
+            "merge_output_format": "mp4",
+            "outtmpl": str(out_dir / "%(id)s.%(ext)s"),
+            "noplaylist": True,
+            "quiet": True,
+            "no_warnings": True,
+            "socket_timeout": timeout,
+        }
     if extractor_args:
         ydl_opts["extractor_args"] = extractor_args
     try:
@@ -64,7 +87,8 @@ def _download_sync(url: str, out_dir: Path, timeout: float, extractor_args: dict
     if not video_id:
         raise GenericDownloadError("yt-dlp did not return a video id")
 
-    path = out_dir / f"{video_id}.mp4"
+    expected_ext = "mp3" if audio_only else "mp4"
+    path = out_dir / f"{video_id}.{expected_ext}"
     if not path.exists():
         candidates = sorted(out_dir.glob(f"{video_id}.*"))
         if not candidates:
@@ -73,10 +97,17 @@ def _download_sync(url: str, out_dir: Path, timeout: float, extractor_args: dict
     return path
 
 
-async def download(url: str, out_dir: Path, timeout: float, max_size_mb: int, extractor_args: dict | None = None) -> Path:
+async def download(
+    url: str,
+    out_dir: Path,
+    timeout: float,
+    max_size_mb: int,
+    extractor_args: dict | None = None,
+    audio_only: bool = False,
+) -> Path:
     try:
         path = await asyncio.wait_for(
-            asyncio.to_thread(_download_sync, url, out_dir, timeout, extractor_args),
+            asyncio.to_thread(_download_sync, url, out_dir, timeout, extractor_args, audio_only),
             timeout=timeout,
         )
     except asyncio.TimeoutError as exc:

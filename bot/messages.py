@@ -49,6 +49,10 @@ def error_generic() -> str:
     return "Ada yang salah pas download. Coba lagi sebentar lagi."
 
 
+def choose_format() -> str:
+    return "Mau download sebagai apa?"
+
+
 def tldv_ask_token() -> str:
     return (
         "To download from tl;dv, I need your bearer token.\n\n"
