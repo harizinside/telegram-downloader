@@ -71,3 +71,50 @@ def tldv_ask_url() -> str:
 
 def tldv_invalid_url() -> str:
     return "URL-nya kelihatannya bukan meeting tl;dv yang valid. Format: https://tldv.io/app/meetings/<id>"
+
+
+def transcribe_ask_audio() -> str:
+    return (
+        "Kirim voice note atau file audio yang mau di-transcribe jadi teks "
+        "(voice note Telegram, atau file suara yang diteruskan dari WhatsApp/lainnya)."
+    )
+
+
+def transcribing() -> str:
+    return "🎙️ Transcribing audio..."
+
+
+def error_not_audio() -> str:
+    return "Itu bukan voice note atau file audio. Kirim voice note atau file audio ya."
+
+
+def error_unsupported_audio_format() -> str:
+    return "Format audio-nya gak didukung. Coba format lain (ogg/opus, mp3, wav, m4a, flac, webm)."
+
+
+def error_audio_too_large(max_mb: int) -> str:
+    return f"File audio-nya kebesaran (maks {max_mb}MB buat fitur transcribe ini). Coba file yang lebih pendek."
+
+
+def error_transcription_not_configured() -> str:
+    return "Fitur transcribe belum aktif — admin bot belum set GROQ_API_KEY."
+
+
+def error_transcription_timeout() -> str:
+    return "Transcribe kelamaan jadi dibatalkan. Coba lagi sebentar lagi."
+
+
+def error_transcription_busy() -> str:
+    return "Layanan transcribe lagi rate-limited, coba lagi sebentar lagi."
+
+
+def error_transcription_failed() -> str:
+    return "Gagal transcribe audio-nya. Coba lagi sebentar lagi."
+
+
+def error_no_speech_detected() -> str:
+    return "Gak kedengeran ada ucapan di audio itu."
+
+
+def transcript_too_long_caption() -> str:
+    return "Transkrip-nya kepanjangan buat dikirim langsung, jadi dikirim sebagai file .txt."

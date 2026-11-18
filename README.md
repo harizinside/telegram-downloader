@@ -68,6 +68,19 @@ Cara dapetin token (dari browser):
 
 Token hanya dipakai untuk satu kali download dan langsung dihapus setelah selesai. Paste link tl;dv biasa (tanpa `/tldv`) **tidak** akan diproses oleh bot karena butuh token.
 
+## `/transcribe` — Transcribe voice note/audio jadi teks
+
+Bot ini punya command `/transcribe` buat convert voice note atau file audio jadi teks, pakai [Groq](https://console.groq.com) (model Whisper, gratis lewat free tier). Cocok juga buat voice note WhatsApp yang di-forward/export ke Telegram.
+
+Cara pakai:
+1. Kirim `/transcribe`.
+2. Kirim voice note (native Telegram) atau file audio (mp3/wav/m4a/ogg/flac/webm) — baik sebagai voice note, file audio, maupun dokumen biasa.
+3. Bot balas teks hasil transcribe. Kalau transkrip-nya panjang, dikirim sebagai file `.txt`.
+
+Butuh `GROQ_API_KEY` (gratis, daftar di https://console.groq.com/keys). Kalau belum di-set, `/transcribe` bakal balas pesan bahwa fiturnya belum aktif — fitur lain (download link, `/tldv`) tetap jalan normal.
+
+Catatan ukuran file: pakai cloud API standar (`TELEGRAM_API_ID`/`HASH` kosong), Telegram cuma izinkan bot download file sampai 20MB. Kalau pakai local Bot API server (lihat bagian "Limit upload" di atas), batasnya naik sampai `GROQ_MAX_AUDIO_MB` (default 25MB, naikkan ke 100MB kalau pakai Groq dev tier).
+
 ## Environment variables
 
 | Var | Default | Keterangan |
@@ -79,3 +92,8 @@ Token hanya dipakai untuk satu kali download dan langsung dihapus setelah selesa
 | `MAX_CONCURRENT_DOWNLOADS` | `2` | Jumlah download yt-dlp paralel maksimum |
 | `DOWNLOAD_TIMEOUT_SECONDS` | `600` | Timeout per download |
 | `MAX_VIDEO_SIZE_MB` | auto (45 / 1950) | Video di atas ini ditolak; auto menyesuaikan limit 50MB/2GB, override manual kalau perlu |
+| `GROQ_API_KEY` | kosong | Dari console.groq.com. Kalau kosong, `/transcribe` nonaktif dan bot balas pesan error |
+| `GROQ_MODEL` | `whisper-large-v3-turbo` | Model Whisper Groq yang dipakai |
+| `GROQ_MAX_AUDIO_MB` | `25` | Batas ukuran file audio buat transcribe; naikkan ke `100` kalau pakai Groq dev tier |
+| `MAX_CONCURRENT_TRANSCRIPTIONS` | `3` | Jumlah panggilan Groq paralel maksimum |
+| `TRANSCRIPTION_TIMEOUT_SECONDS` | `120` | Timeout per panggilan Groq |

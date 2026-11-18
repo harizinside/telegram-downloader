@@ -8,6 +8,7 @@ _LOCAL_API_BASE_URL = "http://telegram-bot-api:8081"
 _CLOUD_API_BASE_URL = "https://api.telegram.org"
 _CLOUD_MAX_VIDEO_SIZE_MB = 45  # safety margin under Telegram's cloud 50MB upload limit
 _LOCAL_MAX_VIDEO_SIZE_MB = 1950  # safety margin under the local server's 2GB limit
+_CLOUD_MAX_AUDIO_DOWNLOAD_MB = 20  # Telegram cloud Bot API hard-caps file *downloads* at 20MB
 
 
 class Settings(BaseSettings):
@@ -21,6 +22,11 @@ class Settings(BaseSettings):
     max_concurrent_downloads: int = 2
     download_timeout_seconds: float = 600
     max_video_size_mb: Optional[int] = None  # auto-derived below if left unset
+    groq_api_key: Optional[str] = None
+    groq_model: str = "whisper-large-v3-turbo"
+    groq_max_audio_mb: int = 25
+    max_concurrent_transcriptions: int = 3
+    transcription_timeout_seconds: float = 120
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -32,6 +38,12 @@ class Settings(BaseSettings):
     @property
     def uses_local_api_server(self) -> bool:
         return bool(self.telegram_api_id and self.telegram_api_hash)
+
+    @property
+    def effective_max_audio_mb(self) -> int:
+        if self.uses_local_api_server:
+            return self.groq_max_audio_mb
+        return min(self.groq_max_audio_mb, _CLOUD_MAX_AUDIO_DOWNLOAD_MB)
 
     @model_validator(mode="after")
     def _apply_derived_defaults(self) -> "Settings":
